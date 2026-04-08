@@ -1,11 +1,10 @@
 package soccer.api.collector.components;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 import soccer.api.collector.services.matchesIngestion.MatchIngestionService;
 
-@Component
+//@Component
 public class StartupRunner implements CommandLineRunner {
 
     private final MatchIngestionService service;
