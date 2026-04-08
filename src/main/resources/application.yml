@@ -20,4 +20,4 @@ match:
     initial-delay: 30s
 
 server:
-  port: ${PORT:8081}
+  port: ${PORT:8080}
