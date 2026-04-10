@@ -1,8 +1,6 @@
 package soccer.api.collector.services.matches;
 
-import java.util.List;
-import java.util.Optional;
-
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +18,16 @@ public class MatchService {
         this.matchRepository = matchRepository;
     }
 
-    public List<MatchDTO> getAllMatches() {
-        return matchRepository.findAll().stream()
-                .map(this::mapToDto)
-                .toList();
+    public Page<MatchDTO> getMatches(int page, int size, String sort) {
+
+        Sort.Direction direction = sort.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "date"));
+
+        return matchRepository.findAll(pageable)
+                .map(this::mapToDto);
     }
 
     public Optional<MatchDTO> getMatchById(Long id) {
@@ -31,10 +35,17 @@ public class MatchService {
                 .map(this::mapToDto);
     }
 
-    public List<MatchDTO> getMatchesByTeamId(Long teamId) {
-        return matchRepository.findByHomeTeamIdOrAwayTeamId(teamId, teamId).stream()
-                .map(this::mapToDto)
-                .toList();
+    public Page<MatchDTO> getMatchesByTeamId(Long teamId, int page, int size, String sort) {
+
+        Sort.Direction direction = sort.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "date"));
+
+        return matchRepository
+                .findByHomeTeamIdOrAwayTeamId(teamId, teamId, pageable)
+                .map(this::mapToDto);
     }
 
     private MatchDTO mapToDto(Match match) {

@@ -1,18 +1,15 @@
 package soccer.api.collector.controllers.matches;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import soccer.api.collector.dtos.matches.MatchDTO;
 import soccer.api.collector.services.matches.MatchService;
 
 @RestController
 @RequestMapping("/api/matches")
+@CrossOrigin("*")
 public class MatchController {
 
     private final MatchService matchService;
@@ -22,8 +19,12 @@ public class MatchController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MatchDTO>> getAllMatches() {
-        return ResponseEntity.ok(matchService.getAllMatches());
+    public ResponseEntity<Page<MatchDTO>> getMatches(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sort
+    ) {
+        return ResponseEntity.ok(matchService.getMatches(page, size, sort));
     }
 
     @GetMapping("/{id}")
@@ -34,7 +35,14 @@ public class MatchController {
     }
 
     @GetMapping("/team/{teamId}")
-    public ResponseEntity<List<MatchDTO>> getMatchesByTeam(@PathVariable Long teamId) {
-        return ResponseEntity.ok(matchService.getMatchesByTeamId(teamId));
+    public ResponseEntity<Page<MatchDTO>> getMatchesByTeam(
+            @PathVariable Long teamId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "desc") String sort
+    ) {
+        return ResponseEntity.ok(
+                matchService.getMatchesByTeamId(teamId, page, size, sort)
+        );
     }
 }
